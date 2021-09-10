@@ -112,17 +112,27 @@ G = read_graph(mbrw_able_edge_file_name,mbrw_able_node_names_file_name);
 %  'min segment mass=' is the number of nodes on the last 3 lines of output
 %  is adequate.
 
-% Try different parameter values.
+% MBRW run parameters.
 bias = 10000;
 memory = 5;
 rand_seed = 0;
 log_num_steps = 23;
 
+% Save the orders of generalized mean to a file
+% so that the MBRW executable can read them.
+finite_orders = -19:19;
+orders = [-Inf finite_orders Inf];
+num_orders = numel(orders);
+order_file_name = 'orders.txt';
+% We have to save it as a column vector,
+% since the C++ executable tries to parse each line as a single number.
+writematrix(orders',order_file_name);
+
 segment_mass_log_multimean_file_name = [ ...
     'segment_mass_log_multimeans' filesep base_network_name '_cc_1' ...
     '_b_' num2str(bias) '_m_' num2str(memory) ...
     '_r_' num2str(rand_seed) '_c_' num2str(log_num_steps) '.csv'];
-c_executable_name = 'mbrw_and_save_segment_mass_log_multimeans';
+c_executable_name = 'mbrw_and_save_segment_mass_log_multimeans_2';
 compile_command = sprintf( 'g++ -std=c++0x -I %s %s.cpp -o %s -O2', ...
     boost_path, c_executable_name, c_executable_name );
 % Windows appends .exe to the file name automatically
@@ -136,9 +146,10 @@ else
     dot_if_linux = './';
     exe_if_pc = '';
 end
-run_command = sprintf('%s%s -i %s -o %s -b %u -m %u -r %u -c %u', ...
+run_command = sprintf('%s%s -i %s -q %s -o %s -b %u -m %u -r %u -c %u', ...
     dot_if_linux, c_executable_name, ...
     mbrw_able_edge_file_name, ...
+    order_file_name, ...
     segment_mass_log_multimean_file_name, ...
     bias, memory, rand_seed, log_num_steps);
 if ~exist(segment_mass_log_multimean_file_name,'file')
@@ -162,9 +173,6 @@ end
 
 %% Plot log_2 segment mass generalized means vs segment length.
 
-% The orders are hard-coded in the C++ program.
-orders = [-Inf -10:10 Inf];
-num_orders = numel(orders);
 log2_generalized_means = readmatrix( ...
     segment_mass_log_multimean_file_name, ...
     'FileType','text','Delimiter',',');
@@ -208,7 +216,6 @@ Dq = spectral_dimensions_v2(log2_generalized_means, 'length', num_nodes);
 
 % Do not plot the values at infinity.
 order_is_finite = ~isinf(orders);
-finite_orders = orders(order_is_finite);
 finite_order_Dqs = Dq(order_is_finite);
 figure
 plot(finite_orders, finite_order_Dqs)
