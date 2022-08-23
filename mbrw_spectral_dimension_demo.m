@@ -18,7 +18,7 @@
 %  11. Take the range of finite-order generalized spectral dimensions.
 %  Dependencies: The C++ MBRW utility uses methods from the Boost library.
 %  You do not need to install it, just download the C++ header files.
-%  I have tested this code with Boost versions 1.64.0 and 1.75.0.
+%  I have tested this code with Boost versions 1.64.0, 1.75.0, and 1.80.0.
 %  https://www.boost.org/
 %  The MATLAB scripts make use of the graph object class.
 %  We assume behavior from MATLAB v 2018a or later.

@@ -23,6 +23,7 @@ I have also included the source code for the utilities used to generate rescaled
 
 All C++ code here uses the Boost C++ library but does not require full installation of Boost, just the presence of the library files.
 To compile, use the following: g++ -std=c++0x -I [path to boost folder] [source file name minus extension].cpp -o [source file name minus extension] -O2
+I have tested the code with Boost versions 1.64.0, 1.75.0, and 1.80.0.
 
 Files:
 extract_full_gunsalus_et_al_2005.m MATLAB function that reads in the data for the example network in its original format from the supplementary materials in Gunsalus et al. 2005 and extracts a list of the edges that represent direct protein-protein interactions
